@@ -1,0 +1,9 @@
+Name: Check Exercise
+Description: Checks the current exercise for completion.
+Binding: check_current_exercise
+Interactive: false
+
+Name: Next Exercise
+Description: Move on to the next exercise (if you've completed the current one).
+Binding: next_exercise
+Interactive: false
