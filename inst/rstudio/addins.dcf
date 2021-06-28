@@ -1,6 +1,6 @@
 Name: Check Exercise
 Description: Checks the current exercise for completion.
-Binding: check_current_exercise
+Binding: check_exercise_rstudio
 Interactive: false
 
 Name: Next Exercise

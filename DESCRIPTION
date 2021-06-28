@@ -13,8 +13,15 @@ LazyData: true
 RoxygenNote: 7.1.1
 Imports: 
     cli,
+    glue,
     rstudioapi,
     yaml
 Depends: 
     testthat
 Config/testthat/edition: 3
+Collate: 
+    'global.R'
+    'exercise.R'
+    'listing.R'
+    'msg.R'
+    'setup.R'

@@ -1,4 +1,4 @@
-#' Alert the user if their exercise is missing any arguments
+#' Check an exercise for missing arguments
 #'
 #' Exercise files contain a number of `?` markers that should be filled in by
 #' the user. R interprets these as variables named `?`, which of course don't
@@ -7,8 +7,10 @@
 #'
 #' @param file_lines character vector of exercise file lines
 #'
-#' @return logical there are missing arguments
-missing_arguments <- function(file_lines) {
+#' @return a list containing:
+#'   - `success`: logical value indicating whether the check succeeded
+#'   - `msg`: character value indicating the success/failure message
+check_placeholders <- function(file_lines) {
   comment <- grepl(r"(^#)", file_lines)  # indices of comment lines
   no_arg <- grepl(r"(`\?`)", file_lines) # indices of lines that contain `?`
 
@@ -18,110 +20,146 @@ missing_arguments <- function(file_lines) {
       "Missing arguments on the following lines:\n\t",
       paste(numbered_file_lines[!comment & no_arg], collapse = "\n\t")
     )
-    cli::cli_alert_danger(err_msg)
-    TRUE
+    list(success = FALSE, msg = err_msg)
   } else {
-    FALSE
+    list(success = TRUE, msg = "All placeholders filled in!")
   }
 }
 
 
-#' Check an exercise file for completion
+#' Check exercise file tests pass
 #'
-#' Given the path to an exercise file, checks the file for completion by
-#' ensuring all placeholder arguments are filled in and that all tests pass.
+#' Runs the R code, ensuring all tests pass
 #'
-#' @param path path to the exercise file
+#' @param file_lines character vector of exercise file lines
 #'
-#' @return logical all tests ran successfully
-check_exercise <- function(path) {
-  if (missing(path)) stop("Must provide a path to the exercise!")
-
-  exercise_file_contents <- readLines(path)
-
-  # Check if all `?` have been completed
-  if (!missing_arguments(exercise_file_contents))  {
-    eval(parse(path)) # Try to run the contents of the file, triggering tests
+#' @return a list containing:
+#'   - `success`: logical value indicating whether the check succeeded
+#'   - `msg`: character value indicating the success/failure message
+#'   - `output`: character vector of the lines of test output
+check_tests <- function(file_lines) {
+  output_lines <- testthat::capture_output_lines({
+    eval(parse(text = file_lines))
+  })
+  tests_passed <- any(stringr::str_detect(output_lines, r"(Tests? passed)"))
+  if (tests_passed) {
+    list(success = TRUE, msg = "Exercise completed!", output = output_lines)
   } else {
-    FALSE
+    list(success = FALSE, msg = "One or more tests failed!", output = output_lines)
   }
 }
 
 
-#' Check the current exercise
+#' Check a local exercise file for completed exercise
+#'
+#' This version of the file check is completed when the trainr project type is
+#' "rstudio". Checks the "current_exercise.R" file for completion and outputs
+#' messages to the console via the `cli` package.
+#'
+#' @param proj_path path to the project folder, optional
+#'
+#' @return a logical value, indicating whether the file passed all checks
+#' @include global.R
+check_exercise_rstudio <- function(proj_path = getwd()) {
+  current_exercise_file_path <- glue::glue("{proj_path}/{EXERCISE_FILENAME}")
+  file_lines <- readLines(current_exercise_file_path)
+
+  cli::cli_h1("Checking current exercise...")
+
+  # Check that all placeholders (`?`) are filled in
+  cli::cli_h2("Ensuring all code has been entered...")
+  placeholder_check_result <- check_placeholders(file_lines)
+  if (!placeholder_check_result$success) {
+    cli::cli_alert_danger(placeholder_check_result$msg)
+    return(FALSE)
+  }
+  cli::cli_alert_success(placeholder_check_result$msg)
+
+  # Check that code passes tests
+  cli::cli_h2("Ensuring all tests pass...")
+  test_check_result <- check_tests(file_lines)
+  cli::cli_text(test_check_result$output)
+  if (!test_check_result$success) {
+    cli::cli_alert_danger(test_check_result$msg)
+    return(FALSE)
+  }
+  cli::cli_alert_success(test_check_result$msg)
+
+  # Helpful info message
+  cli::cli_alert_info("Move on to the next exercise using `trainr::next_exercise()`")
+  save_completed_exercise_file(proj_path)
+  mark_current_exercise_complete(proj_path)
+
+  TRUE
+}
+
+
+#' Check code lines for completed exercise in Shiny application
+#'
+#' This version of the file check is completed when the trainr project type is
+#' "shiny". Checks the lines passed in as R code and outputs the results as
+#' `message()`s, with `<span>`s for HTML formatting.
+#'
+#' @param lines character vector of exercise code lines
+#'
+#' @return a logical value, indicating whether the file passed all checks
+check_exercise_shiny <- function(lines) {
+
+  msg_h1("Checking current exercise...")
+
+  # Check that all placeholders (`?`) are filled in
+  msg_h2("Ensuring all code has been entered...")
+  placeholder_check_result <- check_placeholders(file_lines)
+  if (!placeholder_check_result$success) {
+    msg_alert_danger(placeholder_check_result$msg)
+    return(FALSE)
+  }
+  msg_alert_success(placeholder_check_result$msg)
+
+  # Check that code passes tests
+  msg_h2("Ensuring all tests pass...")
+  test_check_result <- check_tests(file_lines)
+  message(replace_console_color_codes(test_check_result$output))
+  if (!test_check_result$success) {
+    msg_alert_danger(test_check_result$msg)
+    return(FALSE)
+  }
+  msg_alert_success(test_check_result$msg)
+
+  # Helpful info message
+  msg_alert_info("Move on to the next exercise by clicking 'Next'.")
+  mark_current_exercise_complete(proj_path)
+
+  TRUE
+}
+
+
+#' Save current exercise to 'completed' folder
+#'
+#' Maintains a folder of completed exercises, copies the currently completed
+#' exercise file into the completed folder.
 #'
 #' @param proj_path path to the project folder, optional
 #'
 #' @return NULL
-#' @export
-check_current_exercise <- function(proj_path = getwd()) {
-  if (!is_trainr_project(proj_path)) stop(proj_path, " is not a trainr project folder.")
-
-  cli::cli_h1("Checking current exercise")
-  current_exercise_filepath <- project_file_path(proj_path, "current_exercise")
-
-  # If all tests run and pass, alert user
-  if (check_exercise(current_exercise_filepath)) {
-    cli::cli_alert_success("Exercise completed!")
-    complete_current_exercise(proj_path)
-    cli::cli_alert_info("Move on to the next exercise using `trainr::next_exercise()`")
-    update_exercise_entry(proj_path)
-  }
-}
-
-
-#' Mark the current exercise as complete
-#'
-#' Set the current exercise metadata to indicate the exercise is complete and
-#' save the current exercise to the 'completed' folder
-#'
-#' @param proj_path path to the project folder, optional
-#'
-#' @return NULL
-complete_current_exercise <- function(proj_path = getwd()) {
-  current_metadata <- get_current_metadata(proj_path)
-  current_metadata[["completed"]] <- TRUE
-  write_metadata(proj_path, current_metadata)
-
+#' @include global.R
+save_completed_exercise_file <- function(proj_path = getwd()) {
+  metadata <- get_current_exercise_listing(proj_path)
   completed_path <- with(
-    current_metadata,
+    metadata,
     paste("completed", chapter, lesson, exercise, sep = "/")
   )
   completed_dir <- dirname(completed_path)
 
-  current_file_path <- project_file_path(proj_path, "current_exercise")
+  # Copy 'current_exercise.R' to the destination folder
+  current_file_path <- glue::glue("{proj_path}/{EXERCISE_FILENAME}")
   dir.create(completed_dir, showWarnings = F, recursive = T)
   file.copy(current_file_path, completed_dir, recursive = T)
 
-  new_file_path <- paste0(completed_dir, "/current_exercise.R")
+  # Rename 'current_exercise.R' in the destination folder
+  new_file_path <- glue::glue("{completed_dir}/{EXERCISE_FILENAME}")
   file.rename(new_file_path, completed_path)
   cli::cli_alert_info("Completed exercise stored at {completed_path}")
-}
-
-
-#' Advance to the next exercise
-#'
-#' Checks the `.exercises` listing for the last entry where
-#' `completed` == `false`, sets that entry as the current exercise.
-#'
-#' @param proj_path path to the project folder, optional
-#'
-#' @return an object representing the current exercise
-#' @export
-next_exercise <- function(proj_path = getwd()) {
-  if (!dir.exists(proj_path)) stop(proj_path, " is not a valid folder.")
-  exercise_listing_path <- project_file_path(proj_path, "exercise_listings")
-  metadata_path <- project_file_path(proj_path, "current_exercise_metadata")
-  current_exercise_filepath <- project_file_path(proj_path, "current_exercise")
-
-  exercise_listing <- readRDS(exercise_listing_path)
-  metadata <- as.list(exercise_listing[!exercise_listing$complete,][1,])
-
-  # Copy the latest exercise file to the project folder and write exercise
-  # listing to a .yml file
-  yaml::write_yaml(metadata, metadata_path)
-  file.copy(metadata$path, current_exercise_filepath, overwrite = T)
-  metadata
 }
 
 
@@ -129,22 +167,42 @@ next_exercise <- function(proj_path = getwd()) {
 #'
 #' @param proj_path path to the project folder, optional
 #'
-#' @return proj_path path to the project folder, optional
-update_exercise_entry <- function(proj_path = getwd()) {
-  if (!dir.exists(proj_path)) stop(proj_path, " is not a valid folder.")
-  exercise_listing_path <- project_file_path(proj_path, "exercise_listings")
-  metadata_path <- project_file_path(proj_path, "current_exercise_metadata")
+#' @return NULL
+#' @include global.R
+mark_current_exercise_complete <- function(proj_path = getwd()) {
+  ex_list_path <- glue::glue("{proj_path}/{EX_LIST_FILENAME}")
+  ex_list <- readRDS(ex_list_path)
+  ex_list[!ex_list$completed,][1,"completed"] <- TRUE
+  saveRDS(ex_list, ex_list_path)
+}
 
-  exercise_listing <- readRDS(exercise_listing_path)
-  metadata <- yaml::read_yaml(metadata_path)
-  exercise_listing[
-    exercise_listing$chapter == metadata$chapter &
-      exercise_listing$lesson == metadata$lesson &
-      exercise_listing$exercise == metadata$exercise,
-    "completed"
-  ] <- metadata$completed
-  saveRDS(exercise_listing, exercise_listing_path)
-  metadata
+
+#' Advance to the next exercise file
+#'
+#' Updates (creates) the current exercise file to be the current exercise
+#' in the exercise listing
+#'
+#' @param proj_path path to the project folder, optional
+#'
+#' @return an object representing the current exercise
+#' @include global.R
+#' @export
+next_exercise <- function(proj_path = getwd()) {
+  current_file_path <- glue::glue("{proj_path}/{EXERCISE_FILENAME}")
+  metadata <- get_current_exercise_listing(proj_path)
+  file.copy(metadata$path, current_file_path, overwrite = T)
+}
+
+
+#' Fetch the contents of the current exercise file
+#'
+#' @param proj_path path to the project folder, optional
+#'
+#' @return (unmodified) lines from the current exercise
+#' @export
+current_exercise_lines <- function(proj_path = getwd()) {
+  metadata <- get_current_exercise_listing(proj_path)
+  readLines(metadata$path)
 }
 
 

@@ -2,7 +2,7 @@
 % Please edit documentation in R/exercise.R
 \name{next_exercise}
 \alias{next_exercise}
-\title{Advance to the next exercise}
+\title{Advance to the next exercise file}
 \usage{
 next_exercise(proj_path = getwd())
 }
@@ -13,6 +13,6 @@ next_exercise(proj_path = getwd())
 an object representing the current exercise
 }
 \description{
-Checks the `.exercises` listing for the last entry where
-`completed` == `false`, sets that entry as the current exercise.
+Updates (creates) the current exercise file to be the current exercise
+in the exercise listing
 }
