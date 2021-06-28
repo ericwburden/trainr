@@ -57,6 +57,7 @@ write_config_file <- function(proj_path, config) {
 write_exercise_listing <- function(proj_path) {
   ex_list_path <- glue::glue("{proj_path}/{EX_LIST_FILENAME}")
   ex_list <- generate_exercise_listing()
+  ex_list[1, "current"] <- TRUE
   saveRDS(ex_list, ex_list_path)
 }
 

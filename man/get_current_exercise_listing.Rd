@@ -13,6 +13,5 @@ get_current_exercise_listing(proj_path = getwd())
 a named list containing an exercise listing
 }
 \description{
-The current exercise is considered to be the first exercise in the list where
-'completed' == FALSE.
+Get the listing for the current exercise
 }

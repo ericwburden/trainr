@@ -174,7 +174,31 @@ save_completed_exercise_file <- function(proj_path = getwd()) {
 mark_current_exercise_complete <- function(proj_path = getwd()) {
   ex_list_path <- glue::glue("{proj_path}/{EX_LIST_FILENAME}")
   ex_list <- readRDS(ex_list_path)
-  ex_list[!ex_list$completed,][1,"completed"] <- TRUE
+  ex_list[ex_list$current, "completed"] <- TRUE
+  saveRDS(ex_list, ex_list_path)
+}
+
+
+#' Update the current exercise
+#'
+#' If the current exercise has been completed, mark the next exercise in sequence
+#' as the current exercise.
+#'
+#' @param proj_path
+#'
+#' @return NULL
+#' @include global.R
+#' @export
+update_current_exercise <- function(proj_path = getwd()) {
+  ex_list_path <- glue::glue("{proj_path}/{EX_LIST_FILENAME}")
+  ex_list <- readRDS(ex_list_path)
+
+  if (ex_list[ex_list$current, "completed"]) {
+    current_row <- which(ex_list$current)
+    ex_list[current_row, "current"] <- FALSE
+    ex_list[current_row + 1, "current"] <- TRUE
+  }
+
   saveRDS(ex_list, ex_list_path)
 }
 
@@ -191,6 +215,7 @@ mark_current_exercise_complete <- function(proj_path = getwd()) {
 #' @export
 next_exercise <- function(proj_path = getwd()) {
   current_file_path <- glue::glue("{proj_path}/{EXERCISE_FILENAME}")
+  update_current_exercise(proj_path) # Move on if current is complete
   metadata <- get_current_exercise_listing(proj_path)
   file.copy(metadata$path, current_file_path, overwrite = T)
 }

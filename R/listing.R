@@ -15,7 +15,8 @@ exercise_path_to_entry <- function(split_path, full_path) {
     lesson = split_path[2],
     exercise = split_path[3],
     path = full_path,
-    completed = FALSE
+    completed = FALSE,
+    current = FALSE
   )
 }
 
@@ -51,9 +52,6 @@ generate_exercise_listing <- function() {
 
 #' Get the listing for the current exercise
 #'
-#' The current exercise is considered to be the first exercise in the list where
-#' 'completed' == FALSE.
-#'
 #' @param proj_path path to the project folder, optional
 #'
 #' @return a named list containing an exercise listing
@@ -61,7 +59,7 @@ generate_exercise_listing <- function() {
 get_current_exercise_listing <- function(proj_path = getwd()) {
   ex_list_path <- glue::glue("{proj_path}/{EX_LIST_FILENAME}")
   ex_list <- readRDS(ex_list_path)
-  as.list(ex_list[!ex_list$completed,][1,])
+  as.list(ex_list[ex_list$current,])
 }
 
 
