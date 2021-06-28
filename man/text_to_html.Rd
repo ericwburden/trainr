@@ -15,9 +15,9 @@ lines of text with replacements made
 \description{
 The current replacements are:
 - \033[1m  -> '<span style = "font-weight: bold;">'
-- \033[32m -> '<span style = "color: limegreen">'
-- \033[33m -> '<span style = "color: crimson">'
-- \033[90m -> '<span style = "color: darkslategray">'
+- \033[32m -> '<span style = "color: green">'
+- \033[33m -> '<span style = "color: red">'
+- \033[90m -> '<span style = "color: magenta">'
 - \033[39m -> '</span>'
 - \033[22m -> '</span>'
 }

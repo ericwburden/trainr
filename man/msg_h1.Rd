@@ -4,7 +4,7 @@
 \alias{msg_h1}
 \title{Message Headings}
 \usage{
-msg_h1(msg, out.width = 90)
+msg_h1(msg)
 }
 \arguments{
 \item{msg}{text of the heading}
