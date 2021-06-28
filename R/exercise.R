@@ -101,6 +101,7 @@ check_exercise_rstudio <- function(proj_path = getwd()) {
 #' `message()`s, with `<span>`s for HTML formatting.
 #'
 #' @param lines character vector of exercise code lines
+#' @export
 #'
 #' @return a logical value, indicating whether the file passed all checks
 check_exercise_shiny <- function(lines) {
@@ -109,7 +110,7 @@ check_exercise_shiny <- function(lines) {
 
   # Check that all placeholders (`?`) are filled in
   msg_h2("Ensuring all code has been entered...")
-  placeholder_check_result <- check_placeholders(file_lines)
+  placeholder_check_result <- check_placeholders(lines)
   if (!placeholder_check_result$success) {
     msg_alert_danger(placeholder_check_result$msg)
     return(FALSE)
@@ -118,8 +119,9 @@ check_exercise_shiny <- function(lines) {
 
   # Check that code passes tests
   msg_h2("Ensuring all tests pass...")
-  test_check_result <- check_tests(file_lines)
-  message(replace_console_color_codes(test_check_result$output))
+  test_check_result <- check_tests(lines)
+  collapsed_output <- paste(test_check_result$output, collapse = "\n\t")
+  message(text_to_html(collapsed_output))
   if (!test_check_result$success) {
     msg_alert_danger(test_check_result$msg)
     return(FALSE)
@@ -128,7 +130,6 @@ check_exercise_shiny <- function(lines) {
 
   # Helpful info message
   msg_alert_info("Move on to the next exercise by clicking 'Next'.")
-  mark_current_exercise_complete(proj_path)
 
   TRUE
 }
@@ -169,6 +170,7 @@ save_completed_exercise_file <- function(proj_path = getwd()) {
 #'
 #' @return NULL
 #' @include global.R
+#' @export
 mark_current_exercise_complete <- function(proj_path = getwd()) {
   ex_list_path <- glue::glue("{proj_path}/{EX_LIST_FILENAME}")
   ex_list <- readRDS(ex_list_path)
