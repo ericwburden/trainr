@@ -186,7 +186,7 @@ mark_current_exercise_complete <- function(proj_path = getwd()) {
 #'
 #' @param proj_path
 #'
-#' @return NULL
+#' @return a dataframe containing the exercise listing
 #' @include global.R
 #' @export
 update_current_exercise <- function(proj_path = getwd()) {
@@ -200,6 +200,7 @@ update_current_exercise <- function(proj_path = getwd()) {
   }
 
   saveRDS(ex_list, ex_list_path)
+  ex_list
 }
 
 
