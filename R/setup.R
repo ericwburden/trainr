@@ -91,7 +91,7 @@ write_rprofile <- function(proj_path) {
   rprofile_file <- file(rprofile, open = "a")
   cat("library(trainr)\n", file = rprofile_file)
   cat(
-    glue::glue("trainr::update_exercise_listing({proj_path})\n"),
+    glue::glue("trainr::update_exercise_listing({proj_path})\n\n"),
     file = rprofile_file
   )
   close(rprofile_file)

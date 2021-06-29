@@ -15,8 +15,7 @@ Imports:
     cli,
     glue,
     rstudioapi,
-    yaml
-Depends: 
+    yaml,
     testthat
 Config/testthat/edition: 3
 Collate: 
