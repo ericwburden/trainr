@@ -9,6 +9,9 @@ update_current_exercise(proj_path = getwd())
 \arguments{
 \item{proj_path}{}
 }
+\value{
+a dataframe containing the exercise listing
+}
 \description{
 If the current exercise has been completed, mark the next exercise in sequence
 as the current exercise.

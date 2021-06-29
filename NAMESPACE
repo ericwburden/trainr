@@ -2,6 +2,7 @@
 
 export(check_exercise_shiny)
 export(current_exercise_lines)
+export(generate_exercise_listing)
 export(mark_current_exercise_complete)
 export(next_exercise)
 export(setup_dir)
