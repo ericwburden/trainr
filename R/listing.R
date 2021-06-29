@@ -29,6 +29,7 @@ exercise_path_to_entry <- function(split_path, full_path) {
 #' 'inst/lessons' folder.
 #'
 #' @return a dataframe including an entry for each exercise
+#' @export
 generate_exercise_listing <- function() {
   # Get the package 'lessons' folder and paths to all exercises
   lesson_dir <- system.file("lessons", package = "trainr")
