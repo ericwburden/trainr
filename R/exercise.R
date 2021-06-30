@@ -106,8 +106,6 @@ check_exercise_rstudio <- function(proj_path = getwd()) {
 #' @return a logical value, indicating whether the file passed all checks
 check_exercise_shiny <- function(lines) {
 
-  msg_h1("Checking current exercise...")
-
   # Check that all placeholders (`?`) are filled in
   msg_h2("Ensuring all code has been entered...")
   placeholder_check_result <- check_placeholders(lines)
