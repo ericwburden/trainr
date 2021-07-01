@@ -1,7 +1,7 @@
 Package: trainr
 Type: Package
 Title: Learn R by Trial and Error (TDD)
-Version: 0.7.0
+Version: 0.7.1
 Author: Eric Burden
 Maintainer: Eric Burden <eric@ericburden.dev>
 Description: Inspired by numerous exercises, including notably the Ruby Koans,
