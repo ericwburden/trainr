@@ -113,27 +113,27 @@ check_exercise_shiny <- function(lines) {
   msg_lines <- c()
 
   # Check that all placeholders (`?`) are filled in
-  append(msg_lines, msg_h2("Ensuring all code has been entered..."))
+  msg_lines <- append(msg_lines, msg_h2("Ensuring all code has been entered..."))
   placeholder_check_result <- check_placeholders(lines)
   if (!placeholder_check_result$success) {
-    append(msg_lines, msg_alert_danger(placeholder_check_result$msg))
+    msg_lines <- append(msg_lines, msg_alert_danger(placeholder_check_result$msg))
     return(list(success = FALSE, msg = msg_lines))
   }
-  append(msg_lines, msg_alert_success(placeholder_check_result$msg))
+  msg_lines <- append(msg_lines, msg_alert_success(placeholder_check_result$msg))
 
   # Check that code passes tests
-  append(msg_lines, msg_h2("Ensuring all tests pass..."))
+  msg_lines <- append(msg_lines, msg_h2("Ensuring all tests pass..."))
   test_check_result <- check_tests(lines)
   collapsed_output <- paste(test_check_result$output, collapse = "\n\t")
-  append(msg_lines, text_to_html(collapsed_output))
+  msg_lines <- append(msg_lines, text_to_html(collapsed_output))
   if (!test_check_result$success) {
-    append(msg_lines, msg_alert_danger(test_check_result$msg))
+    msg_lines <- append(msg_lines, msg_alert_danger(test_check_result$msg))
     return(list(success = FALSE, msg = msg_lines))
   }
-  append(msg_lines, msg_alert_success(test_check_result$msg))
+  msg_lines <- append(msg_lines, msg_alert_success(test_check_result$msg))
 
   # Helpful info message
-  append(
+  msg_lines <- append(
     msg_lines,
     msg_alert_info("Move on to the next exercise by clicking 'Next'.")
   )
