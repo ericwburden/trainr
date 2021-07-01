@@ -103,33 +103,42 @@ check_exercise_rstudio <- function(proj_path = getwd()) {
 #' @param lines character vector of exercise code lines
 #' @export
 #'
-#' @return a logical value, indicating whether the file passed all checks
+#' @return a list containing:
+#'   `success` a boolean indicating whether the code was evaluated successfully
+#'             and passed all tests
+#'   `msg`     a character vector of HTML formatted messages generated while
+#'             evaluating the code
 check_exercise_shiny <- function(lines) {
 
+  msg_lines <- c()
+
   # Check that all placeholders (`?`) are filled in
-  msg_h2("Ensuring all code has been entered...")
+  append(msg_lines, msg_h2("Ensuring all code has been entered..."))
   placeholder_check_result <- check_placeholders(lines)
   if (!placeholder_check_result$success) {
-    msg_alert_danger(placeholder_check_result$msg)
-    return(FALSE)
+    append(msg_lines, msg_alert_danger(placeholder_check_result$msg))
+    return(list(success = FALSE, msg = msg_lines))
   }
-  msg_alert_success(placeholder_check_result$msg)
+  append(msg_lines, msg_alert_success(placeholder_check_result$msg))
 
   # Check that code passes tests
-  msg_h2("Ensuring all tests pass...")
+  append(msg_lines, msg_h2("Ensuring all tests pass..."))
   test_check_result <- check_tests(lines)
   collapsed_output <- paste(test_check_result$output, collapse = "\n\t")
-  message(text_to_html(collapsed_output))
+  append(msg_lines, text_to_html(collapsed_output))
   if (!test_check_result$success) {
-    msg_alert_danger(test_check_result$msg)
-    return(FALSE)
+    append(msg_lines, msg_alert_danger(test_check_result$msg))
+    return(list(success = FALSE, msg = msg_lines))
   }
-  msg_alert_success(test_check_result$msg)
+  append(msg_lines, msg_alert_success(test_check_result$msg))
 
   # Helpful info message
-  msg_alert_info("Move on to the next exercise by clicking 'Next'.")
+  append(
+    msg_lines,
+    msg_alert_info("Move on to the next exercise by clicking 'Next'.")
+  )
 
-  TRUE
+  list(success = TRUE, msg = msg_lines)
 }
 
 

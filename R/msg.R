@@ -51,13 +51,13 @@ text_to_html <- function(lines) {
 #' @param msg text of the heading
 #' @param out.width width of the output line, in characters
 #'
-#' @return NULL
+#' @return an HTML formatted message
 msg_h1 <- function(msg) {
   pre <- "──"
   post <- "──────────────────"
   style <- glue::glue("style=\"color:{blue}; font-weight:bold; font-size:1.65rem;\"")
   msg <- text_to_html(msg)
-  message(glue::glue("<span {style}>{pre} {msg} {post}</span>"))
+  glue::glue("<span {style}>{pre} {msg} {post}</span>")
 }
 
 
@@ -68,13 +68,13 @@ msg_h1 <- function(msg) {
 #'
 #' @param msg text of the heading
 #'
-#' @return NULL
+#' @return an HTML formatted message
 msg_h2 <- function(msg) {
   pre <- "──"
   post <- "──"
   style <- glue::glue("style=\"color: {yellow}; font-weight:bold;\"")
   msg <- text_to_html(msg)
-  message(glue::glue("<span {style}>{pre} {msg} {post}</span>"))
+  glue::glue("<span {style}>{pre} {msg} {post}</span>")
 }
 
 
@@ -84,12 +84,12 @@ msg_h2 <- function(msg) {
 #'
 #' @param msg text of the message
 #'
-#' @return NULL
+#' @return an HTML formatted message
 msg_alert_danger <- function(msg) {
   pre <- "\u2718"
   style <- glue::glue("style=\"color: {red}\"")
   msg <- text_to_html(msg)
-  message(glue::glue("<span {style}>{pre} {msg}</span>"))
+  glue::glue("<span {style}>{pre} {msg}</span>")
 }
 
 
@@ -99,12 +99,12 @@ msg_alert_danger <- function(msg) {
 #'
 #' @param msg text of the message
 #'
-#' @return NULL
+#' @return an HTML formatted message
 msg_alert_success <- function(msg) {
   pre <- "\u2714"
   style <- glue::glue("style=\"color: {green}\"")
   msg <- text_to_html(msg)
-  message(glue::glue("<span {style}>{pre} {msg}</span>"))
+  glue::glue("<span {style}>{pre} {msg}</span>")
 }
 
 
@@ -114,10 +114,10 @@ msg_alert_success <- function(msg) {
 #'
 #' @param msg text of the message
 #'
-#' @return NULL
+#' @return an HTML formatted message
 msg_alert_info <- function(msg) {
   pre <- "\u24d8"
   style <- glue::glue("style=\"color: {cyan}\"")
   msg <- text_to_html(msg)
-  message(glue::glue("<span {style}>{pre} {msg}</span>"))
+  glue::glue("<span {style}>{pre} {msg}</span>")
 }
