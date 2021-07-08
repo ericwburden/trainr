@@ -27,19 +27,53 @@ check_placeholders <- function(file_lines) {
 }
 
 
+#' Check to ensure exercise tests have not been altered
+#'
+#' Compares the tests from the user's modified exercise file to the tests
+#' included in the source exercise file. Since the actual tests run are those
+#' included in the source file, the results displayed for the user may not
+#' match the results they would get if their tests were run.
+#'
+#' @param file_lines character vector of exercise file lines
+#' @param proj_path path to the project folder, optional
+#'
+#' @return a list containing:
+#'   - `success`: logical value indicating whether the check succeeded
+#'   - `msg`: character value indicating the success/failure message
+check_test_integrity <- function(file_lines, proj_path = getwd()) {
+  unaltered_test_lines <- original_test_lines(proj_path)
+  current_test_lines <- file_lines[is_test(file_lines)]
+
+  if (all(unaltered_test_lines == current_test_lines)) {
+    list(success = TRUE, msg = "Test integrity confirmed!")
+  } else {
+    warning_msg <- paste(
+      "It appears you have altered the tests.",
+      "Results may not match the tests displayed on your screen."
+    )
+    list(success = FALSE, msg = warning_msg)
+  }
+}
+
+
 #' Check exercise file tests pass
 #'
 #' Runs the R code, ensuring all tests pass
 #'
 #' @param file_lines character vector of exercise file lines
+#' @param proj_path path to the project folder, optional
 #'
 #' @return a list containing:
 #'   - `success`: logical value indicating whether the check succeeded
 #'   - `msg`: character value indicating the success/failure message
 #'   - `output`: character vector of the lines of test output
-check_tests <- function(file_lines) {
+check_tests <- function(file_lines, proj_path = getwd()) {
+  unaltered_test_lines <- original_test_lines(proj_path)
+  exercise_code_lines <- file_lines[!is_test(file_lines)]
+  lines_to_test <- c(exercise_code_lines, unaltered_test_lines)
+
   output_lines <- testthat::capture_output_lines({
-    eval(parse(text = file_lines))
+    eval(parse(text = lines_to_test))
   })
   tests_passed <- any(stringr::str_detect(output_lines, r"(Tests? passed)"))
   if (tests_passed) {
@@ -74,6 +108,15 @@ check_exercise_rstudio <- function(proj_path = getwd()) {
     return(FALSE)
   }
   cli::cli_alert_success(placeholder_check_result$msg)
+
+  # Check that test code has not been altered
+  cli::cli_h2("Ensuring test integrity...")
+  test_integrity_result <- check_test_integrity(file_lines, proj_path)
+  if (!test_integrity_result$success) {
+    cli::cli_alert_warning(test_integrity_result$msg)
+  } else {
+    cli::cli_alert_success(test_integrity_result$msg)
+  }
 
   # Check that code passes tests
   cli::cli_h2("Ensuring all tests pass...")
@@ -120,6 +163,15 @@ check_exercise_shiny <- function(lines) {
     return(list(success = FALSE, msg = msg_lines))
   }
   msg_lines <- append(msg_lines, msg_alert_success(placeholder_check_result$msg))
+
+  # Check that test code has not been altered
+  msg_lines <- append(msg_lines, msg_h2("Ensuring test integrity..."))
+  test_integrity_result <- check_test_integrity(file_lines, proj_path)
+  if (!test_integrity_result$success) {
+    msg_lines <- append(msg_lines, msg_alert_warning(test_integrity_result$msg))
+  } else {
+    msg_lines <- append(msg_lines, msg_alert_success(test_integrity_result$msg))
+  }
 
   # Check that code passes tests
   msg_lines <- append(msg_lines, msg_h2("Ensuring all tests pass..."))
@@ -238,6 +290,36 @@ next_exercise <- function(proj_path = getwd()) {
 current_exercise_lines <- function(proj_path = getwd()) {
   metadata <- get_current_exercise_listing(proj_path)
   readLines(metadata$path)
+}
+
+
+#' Flag lines that contain test code
+#'
+#' This function assumes that tests begin with the line containing a 'flag' and
+#' continue until the end of the file.
+#'
+#' @param lines character vector of exercise code lines
+#'
+#' @return a logical vector indicating which lines contain test code
+is_test <- function(lines) {
+  tests_flag <- r"(require\(testthat\))"
+
+  # The line with the tests flag and every line after will be TRUE
+  as.logical(cumsum(grepl(tests_flag, lines)))
+}
+
+
+#' Get test code from original exercise file
+#'
+#' Fetches the lines containing test code from the original, unaltered version
+#' of the current exercise file.
+#'
+#' @param proj_path path to the project folder, optional
+#'
+#' @return a character vector containing the test code for the current exercise
+original_test_lines <- function(proj_path = getwd()) {
+  lines <- readRDS(get_current_exercise_listing(proj_path)$path)
+  lines[is_test(lines)]
 }
 
 

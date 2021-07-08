@@ -121,3 +121,18 @@ msg_alert_info <- function(msg) {
   msg <- text_to_html(msg)
   glue::glue("<span {style}>{pre} {msg}</span>")
 }
+
+
+#' Message Alerts
+#'
+#' Displays a short status message with HTML formatting
+#'
+#' @param msg text of the message
+#'
+#' @return an HTML formatted message
+msg_alert_warning <- function(msg) {
+  pre <- "\u203C"
+  style <- glue::glue("style=\"color: {yellow}\"")
+  msg <- text_to_html(msg)
+  glue::glue("<span {style}>{pre} {msg}</span>")
+}
