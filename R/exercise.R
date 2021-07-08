@@ -144,6 +144,7 @@ check_exercise_rstudio <- function(proj_path = getwd()) {
 #' `message()`s, with `<span>`s for HTML formatting.
 #'
 #' @param lines character vector of exercise code lines
+#' @param proj_path path to the project folder, optional
 #' @export
 #'
 #' @return a list containing:
@@ -151,7 +152,7 @@ check_exercise_rstudio <- function(proj_path = getwd()) {
 #'             and passed all tests
 #'   `msg`     a character vector of HTML formatted messages generated while
 #'             evaluating the code
-check_exercise_shiny <- function(lines) {
+check_exercise_shiny <- function(lines, proj_path = getwd()) {
 
   msg_lines <- c()
 
