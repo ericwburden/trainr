@@ -167,7 +167,7 @@ check_exercise_shiny <- function(lines, proj_path = getwd()) {
 
   # Check that test code has not been altered
   msg_lines <- append(msg_lines, msg_h2("Ensuring test integrity..."))
-  test_integrity_result <- check_test_integrity(file_lines, proj_path)
+  test_integrity_result <- check_test_integrity(lines, proj_path)
   if (!test_integrity_result$success) {
     msg_lines <- append(msg_lines, msg_alert_warning(test_integrity_result$msg))
   } else {
