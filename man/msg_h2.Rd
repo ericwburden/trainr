@@ -9,6 +9,9 @@ msg_h2(msg)
 \arguments{
 \item{msg}{text of the heading}
 }
+\value{
+an HTML formatted message
+}
 \description{
 Outputs a message with the specified heading format
 }

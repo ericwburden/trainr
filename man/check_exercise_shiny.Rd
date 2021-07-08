@@ -10,7 +10,11 @@ check_exercise_shiny(lines)
 \item{lines}{character vector of exercise code lines}
 }
 \value{
-a logical value, indicating whether the file passed all checks
+a list containing:
+  `success` a boolean indicating whether the code was evaluated successfully
+            and passed all tests
+  `msg`     a character vector of HTML formatted messages generated while
+            evaluating the code
 }
 \description{
 This version of the file check is completed when the trainr project type is

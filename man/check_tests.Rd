@@ -4,10 +4,12 @@
 \alias{check_tests}
 \title{Check exercise file tests pass}
 \usage{
-check_tests(file_lines)
+check_tests(file_lines, proj_path = getwd())
 }
 \arguments{
 \item{file_lines}{character vector of exercise file lines}
+
+\item{proj_path}{path to the project folder, optional}
 }
 \value{
 a list containing:

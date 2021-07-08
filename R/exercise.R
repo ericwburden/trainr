@@ -318,7 +318,7 @@ is_test <- function(lines) {
 #'
 #' @return a character vector containing the test code for the current exercise
 original_test_lines <- function(proj_path = getwd()) {
-  lines <- readRDS(get_current_exercise_listing(proj_path)$path)
+  lines <- readLines(get_current_exercise_listing(proj_path)$path)
   lines[is_test(lines)]
 }
 

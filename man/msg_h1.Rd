@@ -11,6 +11,9 @@ msg_h1(msg)
 
 \item{out.width}{width of the output line, in characters}
 }
+\value{
+an HTML formatted message
+}
 \description{
 Outputs a message with the specified heading format
 }

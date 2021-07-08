@@ -9,6 +9,9 @@ msg_alert_info(msg)
 \arguments{
 \item{msg}{text of the message}
 }
+\value{
+an HTML formatted message
+}
 \description{
 Displays a short status message with HTML formatting
 }
