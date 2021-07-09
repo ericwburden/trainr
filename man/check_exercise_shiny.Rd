@@ -4,12 +4,12 @@
 \alias{check_exercise_shiny}
 \title{Check code lines for completed exercise in Shiny application}
 \usage{
-check_exercise_shiny(lines, proj_path = getwd())
+check_exercise_shiny(lines, test_lines)
 }
 \arguments{
 \item{lines}{character vector of exercise code lines}
 
-\item{proj_path}{path to the project folder, optional}
+\item{test_lines}{character vector of original test lines}
 }
 \value{
 a list containing:

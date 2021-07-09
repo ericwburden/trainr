@@ -14,5 +14,6 @@ a character vector containing the test code for the current exercise
 }
 \description{
 Fetches the lines containing test code from the original, unaltered version
-of the current exercise file.
+of the current exercise file. Current exercise file is the one listed in the
+exercise listing in `proj_path`.
 }

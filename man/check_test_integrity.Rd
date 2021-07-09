@@ -4,12 +4,12 @@
 \alias{check_test_integrity}
 \title{Check to ensure exercise tests have not been altered}
 \usage{
-check_test_integrity(file_lines, proj_path = getwd())
+check_test_integrity(file_lines, test_lines)
 }
 \arguments{
 \item{file_lines}{character vector of exercise file lines}
 
-\item{proj_path}{path to the project folder, optional}
+\item{test_lines}{character vector of original test lines}
 }
 \value{
 a list containing:

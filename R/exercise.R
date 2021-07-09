@@ -310,6 +310,17 @@ is_test <- function(lines) {
 }
 
 
+#' Extract test lines from exercise lines
+#'
+#' @param lines character vector of exercise code lines
+#'
+#' @return a character vector of lines containing test code
+#' @export
+get_test_lines <- function(lines) {
+  lines[is_test(lines)]
+}
+
+
 #' Get test code from original exercise file
 #'
 #' Fetches the lines containing test code from the original, unaltered version
