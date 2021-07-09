@@ -35,16 +35,15 @@ check_placeholders <- function(file_lines) {
 #' match the results they would get if their tests were run.
 #'
 #' @param file_lines character vector of exercise file lines
-#' @param proj_path path to the project folder, optional
+#' @param test_lines character vector of original test lines
 #'
 #' @return a list containing:
 #'   - `success`: logical value indicating whether the check succeeded
 #'   - `msg`: character value indicating the success/failure message
-check_test_integrity <- function(file_lines, proj_path = getwd()) {
-  unaltered_test_lines <- original_test_lines(proj_path)
+check_test_integrity <- function(file_lines, test_lines) {
   current_test_lines <- file_lines[is_test(file_lines)]
 
-  if (all(unaltered_test_lines == current_test_lines)) {
+  if (all(test_lines == current_test_lines)) {
     list(success = TRUE, msg = "Test integrity confirmed!")
   } else {
     warning_msg <- paste(
@@ -111,7 +110,8 @@ check_exercise_rstudio <- function(proj_path = getwd()) {
 
   # Check that test code has not been altered
   cli::cli_h2("Ensuring test integrity...")
-  test_integrity_result <- check_test_integrity(file_lines, proj_path)
+  test_lines <- original_test_lines(proj_path)
+  test_integrity_result <- check_test_integrity(file_lines, test_lines)
   if (!test_integrity_result$success) {
     cli::cli_alert_warning(test_integrity_result$msg)
   } else {
@@ -144,7 +144,7 @@ check_exercise_rstudio <- function(proj_path = getwd()) {
 #' `message()`s, with `<span>`s for HTML formatting.
 #'
 #' @param lines character vector of exercise code lines
-#' @param proj_path path to the project folder, optional
+#' @param test_lines character vector of original test lines
 #' @export
 #'
 #' @return a list containing:
@@ -152,7 +152,7 @@ check_exercise_rstudio <- function(proj_path = getwd()) {
 #'             and passed all tests
 #'   `msg`     a character vector of HTML formatted messages generated while
 #'             evaluating the code
-check_exercise_shiny <- function(lines, proj_path = getwd()) {
+check_exercise_shiny <- function(lines, test_lines) {
 
   msg_lines <- c()
 
@@ -167,7 +167,7 @@ check_exercise_shiny <- function(lines, proj_path = getwd()) {
 
   # Check that test code has not been altered
   msg_lines <- append(msg_lines, msg_h2("Ensuring test integrity..."))
-  test_integrity_result <- check_test_integrity(lines, proj_path)
+  test_integrity_result <- check_test_integrity(lines, test_lines)
   if (!test_integrity_result$success) {
     msg_lines <- append(msg_lines, msg_alert_warning(test_integrity_result$msg))
   } else {
@@ -313,7 +313,8 @@ is_test <- function(lines) {
 #' Get test code from original exercise file
 #'
 #' Fetches the lines containing test code from the original, unaltered version
-#' of the current exercise file.
+#' of the current exercise file. Current exercise file is the one listed in the
+#' exercise listing in `proj_path`.
 #'
 #' @param proj_path path to the project folder, optional
 #'
