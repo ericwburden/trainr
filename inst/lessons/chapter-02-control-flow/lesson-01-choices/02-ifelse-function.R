@@ -6,7 +6,8 @@
 # deciding which instructions are run, in what order, and how many times. This
 # typically takes the form of 'choices' (run this code, or that code) and
 # 'loops' (run this code some number of times, typically changing only a small
-# part each time).
+# part each time).Type `?Control` in the console for more information about
+# control flow.
 
 # R also provides the `ifelse()` function that allows you to make multiple
 # comparisons in a single statement. For more information about this function,
