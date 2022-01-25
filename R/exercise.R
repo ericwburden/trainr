@@ -68,11 +68,11 @@ check_test_integrity <- function(file_lines, test_lines) {
 #'   - `output`: character vector of the lines of test output
 check_tests <- function(file_lines, proj_path = getwd()) {
   unaltered_test_lines <- original_test_lines(proj_path)
-  exercise_code_lines <- file_lines[!is_test(file_lines)]
-  lines_to_test <- c(exercise_code_lines, unaltered_test_lines)
+  exercise_code_lines  <- file_lines[!is_test(file_lines)]
+  lines_to_test        <- c(exercise_code_lines, unaltered_test_lines)
 
   output_lines <- testthat::capture_output_lines({
-    eval(parse(text = lines_to_test))
+    testthat::capture_error(eval(parse(text = lines_to_test)))
   })
   tests_passed <- any(stringr::str_detect(output_lines, r"(Tests? passed)"))
   if (tests_passed) {
@@ -121,9 +121,9 @@ check_exercise_rstudio <- function(proj_path = getwd()) {
   # Check that code passes tests
   cli::cli_h2("Ensuring all tests pass...")
   test_check_result <- check_tests(file_lines)
-  cli::cli_text(test_check_result$output)
   if (!test_check_result$success) {
     cli::cli_alert_danger(test_check_result$msg)
+    cli::cli_verbatim(test_check_result$output)
     return(FALSE)
   }
   cli::cli_alert_success(test_check_result$msg)
@@ -303,7 +303,7 @@ current_exercise_lines <- function(proj_path = getwd()) {
 #'
 #' @return a logical vector indicating which lines contain test code
 is_test <- function(lines) {
-  tests_flag <- r"(require\(testthat\))"
+  tests_flag <- "(require\\(testthat\\))"
 
   # The line with the tests flag and every line after will be TRUE
   as.logical(cumsum(grepl(tests_flag, lines)))

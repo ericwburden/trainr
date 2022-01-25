@@ -95,10 +95,8 @@ update_exercise_listing <- function(proj_path = getwd()) {
       FALSE,
       merged_ex_list$completed.x
     )
-    merged_ex_list <- subset(
-      merged_ex_list,
-      select = c("chapter", "lesson", "exercise", "path", "completed")
-    )
+    columns <- c("chapter", "lesson", "exercise", "path", "current", "completed")
+    merged_ex_list <- subset(merged_ex_list, select = columns)
     saveRDS(merged_ex_list, ex_list_path)
   }
 

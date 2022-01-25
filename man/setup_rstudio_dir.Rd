@@ -4,10 +4,10 @@
 \alias{setup_rstudio_dir}
 \title{Function stub for creating a new RStudio project}
 \usage{
-setup_rstudio_dir(proj_path)
+setup_rstudio_dir(path, ...)
 }
 \arguments{
-\item{proj_path}{path to the new project directory}
+\item{path}{path to the new project directory}
 }
 \description{
 Function stub for creating a new RStudio project

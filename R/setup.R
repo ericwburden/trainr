@@ -26,12 +26,12 @@ setup_dir <- function(proj_path, type = c("minimal", "rstudio", "shiny")) {
 
 #' Function stub for creating a new RStudio project
 #'
-#' @param proj_path path to the new project directory
+#' @param path path to the new project directory
 #'
 #' @return NULL
 #' @export
-setup_rstudio_dir <- function(proj_path) {
-  setup_dir(proj_path, "rstudio")
+setup_rstudio_dir <- function(path, ...) {
+  setup_dir(path, "rstudio")
 }
 
 
@@ -91,7 +91,7 @@ write_rprofile <- function(proj_path) {
   rprofile_file <- file(rprofile, open = "a")
   cat("library(trainr)\n", file = rprofile_file)
   cat(
-    glue::glue("trainr::update_exercise_listing({proj_path})\n\n"),
+    glue::glue("trainr::update_exercise_listing()\n\n"),
     file = rprofile_file
   )
   close(rprofile_file)
