@@ -11,8 +11,8 @@
 #'   - `success`: logical value indicating whether the check succeeded
 #'   - `msg`: character value indicating the success/failure message
 check_placeholders <- function(file_lines) {
-  comment <- grepl(r"(^#)", file_lines)  # indices of comment lines
-  no_arg <- grepl(r"(`\?`)", file_lines) # indices of lines that contain `?`
+  comment <- grepl(r"(^#)", file_lines)   # indices of comment lines
+  no_arg  <- grepl(r"(`\?`)", file_lines) # indices of lines that contain `?`
 
   if (any(!comment & no_arg)) {
     numbered_file_lines <- paste(1:length(file_lines), file_lines, sep = ": ")
@@ -72,7 +72,9 @@ check_tests <- function(file_lines, proj_path = getwd()) {
   lines_to_test        <- c(exercise_code_lines, unaltered_test_lines)
 
   output_lines <- testthat::capture_output_lines({
-    testthat::capture_error(eval(parse(text = lines_to_test)))
+    (parse(text = lines_to_test)
+      |> eval()
+      |> testthat::capture_error())
   })
   tests_passed <- any(stringr::str_detect(output_lines, r"(Tests? passed)"))
   if (tests_passed) {
@@ -155,41 +157,53 @@ check_exercise_rstudio <- function(proj_path = getwd()) {
 check_exercise_shiny <- function(lines, test_lines) {
 
   msg_lines <- c()
+  append_to_msg_lines <- \(x) append(msg_lines, x)
 
   # Check that all placeholders (`?`) are filled in
-  msg_lines <- append(msg_lines, msg_h2("Ensuring all code has been entered..."))
+  (msg_lines
+    <- msg_h2("Ensuring all code has been entered...")
+    |> append_to_msg_lines())
   placeholder_check_result <- check_placeholders(lines)
   if (!placeholder_check_result$success) {
-    msg_lines <- append(msg_lines, msg_alert_danger(placeholder_check_result$msg))
+    (msg_lines
+      <- msg_alert_danger(placeholder_check_result$msg)
+      |> append_to_msg())
     return(list(success = FALSE, msg = msg_lines))
   }
-  msg_lines <- append(msg_lines, msg_alert_success(placeholder_check_result$msg))
+  (msg_lines
+    <- msg_alert_success(placeholder_check_result$msg)
+    |> append_to_msg_lines())
 
   # Check that test code has not been altered
-  msg_lines <- append(msg_lines, msg_h2("Ensuring test integrity..."))
+  msg_lines <- msg_h2("Ensuring test integrity...") |> append_to_msg_lines()
   test_integrity_result <- check_test_integrity(lines, test_lines)
   if (!test_integrity_result$success) {
-    msg_lines <- append(msg_lines, msg_alert_warning(test_integrity_result$msg))
+    (msg_lines
+      <- msg_alert_warning(test_integrity_result$msg)
+      |> append_to_msg_lines())
   } else {
-    msg_lines <- append(msg_lines, msg_alert_success(test_integrity_result$msg))
+    (msg_lines
+      <- msg_alert_success(test_integrity_result$msg)
+      |> append_to_msg_lines())
   }
 
   # Check that code passes tests
-  msg_lines <- append(msg_lines, msg_h2("Ensuring all tests pass..."))
+  msg_lines <- msg_h2("Ensuring all tests pass...") |> append_to_msg_lines()
   test_check_result <- check_tests(lines)
   collapsed_output <- paste(test_check_result$output, collapse = "\n\t")
-  msg_lines <- append(msg_lines, text_to_html(collapsed_output))
+  msg_lines <- text_to_html(collapsed_output) |> append_to_msg_lines()
   if (!test_check_result$success) {
-    msg_lines <- append(msg_lines, msg_alert_danger(test_check_result$msg))
+    (msg_lines
+      <- msg_alert_danger(test_check_result$msg)
+      |> append_to_msg_lines())
     return(list(success = FALSE, msg = msg_lines))
   }
-  msg_lines <- append(msg_lines, msg_alert_success(test_check_result$msg))
+  msg_lines <- msg_alert_success(test_check_result$msg) |> append_to_msg_lines()
 
   # Helpful info message
-  msg_lines <- append(
-    msg_lines,
-    msg_alert_info("Move on to the next exercise by clicking 'Next'.")
-  )
+  (msg_lines
+    <- msg_alert_info("Move on to the next exercise by clicking 'Next'.")
+    |> append_to_msg_lines())
 
   list(success = TRUE, msg = msg_lines)
 }
