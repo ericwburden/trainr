@@ -247,7 +247,7 @@ save_completed_exercise_file <- function(proj_path = getwd()) {
 #' @export
 mark_current_exercise_complete <- function(proj_path = getwd()) {
   ex_list_path <- glue::glue("{proj_path}/{EX_LIST_FILENAME}")
-  ex_list <- readRDS(ex_list_path)
+  ex_list      <- readRDS(ex_list_path)
   ex_list[ex_list$current, "completed"] <- TRUE
   saveRDS(ex_list, ex_list_path)
 }
@@ -265,12 +265,19 @@ mark_current_exercise_complete <- function(proj_path = getwd()) {
 #' @export
 update_current_exercise <- function(proj_path = getwd()) {
   ex_list_path <- glue::glue("{proj_path}/{EX_LIST_FILENAME}")
-  ex_list <- readRDS(ex_list_path)
+  ex_list      <- readRDS(ex_list_path)
 
+  # If the current exercise is also completed, make the next exercise current
   if (ex_list[ex_list$current, "completed"]) {
     current_row <- which(ex_list$current)
-    ex_list[current_row, "current"] <- FALSE
+    ex_list[current_row, "current"]     <- FALSE
     ex_list[current_row + 1, "current"] <- TRUE
+  }
+
+  # If no exercises are marked as current, and all the exercises are not
+  # marked as completed, set the first exercise as the current one
+  if (!any(ex_list$current) & !all(ex_list$completed)) {
+    ex_list[1, "current"] <- TRUE
   }
 
   saveRDS(ex_list, ex_list_path)
@@ -291,6 +298,7 @@ update_current_exercise <- function(proj_path = getwd()) {
 next_exercise <- function(proj_path = getwd()) {
   current_file_path <- glue::glue("{proj_path}/{EXERCISE_FILENAME}")
   update_current_exercise(proj_path) # Move on if current is complete
+
   metadata <- get_current_exercise_listing(proj_path)
   file.copy(metadata$path, current_file_path, overwrite = T)
 }
@@ -345,7 +353,10 @@ get_test_lines <- function(lines) {
 #'
 #' @return a character vector containing the test code for the current exercise
 original_test_lines <- function(proj_path = getwd()) {
-  lines <- readLines(get_current_exercise_listing(proj_path)$path)
+  (lines
+    <- get_current_exercise_listing(proj_path)
+    |> (\(x) x$path)()
+    |> readLines())
   lines[is_test(lines)]
 }
 
