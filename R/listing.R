@@ -11,12 +11,12 @@
 #' `path`, and `completed`
 exercise_path_to_entry <- function(split_path, full_path) {
   data.frame(
-    chapter = split_path[1],
-    lesson = split_path[2],
-    exercise = split_path[3],
-    path = full_path,
+    chapter   = split_path[1],
+    lesson    = split_path[2],
+    exercise  = split_path[3],
+    path      = full_path,
     completed = FALSE,
-    current = FALSE
+    current   = FALSE
   )
 }
 
@@ -32,12 +32,12 @@ exercise_path_to_entry <- function(split_path, full_path) {
 #' @export
 generate_exercise_listing <- function() {
   # Get the package 'lessons' folder and paths to all exercises
-  lesson_dir <- system.file("lessons", package = "trainr")
+  lesson_dir     <- system.file("lessons", package = "trainr")
   exercise_paths <- list.files(lesson_dir, full.names = T, recursive = T)
 
   # Extract out the final '<chapter name>/<lesson name>/<exercise name>.R' bit
   regex_captures <- regexpr(r"((?<=lessons\/).*$)", exercise_paths, perl = T)
-  lesson_paths <- regmatches(exercise_paths, regex_captures)
+  lesson_paths   <- regmatches(exercise_paths, regex_captures)
   split_lesson_paths <- strsplit(lesson_paths, "/")
 
   # Convert each path to an exercise file into a named list
@@ -59,7 +59,7 @@ generate_exercise_listing <- function() {
 #' @include global.R
 get_current_exercise_listing <- function(proj_path = getwd()) {
   ex_list_path <- glue::glue("{proj_path}/{EX_LIST_FILENAME}")
-  ex_list <- readRDS(ex_list_path)
+  ex_list      <- readRDS(ex_list_path)
   as.list(ex_list[ex_list$current,])
 }
 
@@ -74,7 +74,7 @@ get_current_exercise_listing <- function(proj_path = getwd()) {
 #' @export
 update_exercise_listing <- function(proj_path = getwd()) {
   ex_list_path <- glue::glue("{proj_path}/{EX_LIST_FILENAME}")
-  new_ex_list <- generate_exercise_listing()
+  new_ex_list  <- generate_exercise_listing()
 
   if (!file.exists(ex_list_path)) {
     saveRDS(new_ex_list, ex_list_path)

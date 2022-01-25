@@ -1,13 +1,13 @@
 # Define colors used here
 
-green <- "#859900"
-blue <- "#268bd2"
-cyan <- "#2aa198"
-violet <- "#6c71c4"
+green   <- "#859900"
+blue    <- "#268bd2"
+cyan    <- "#2aa198"
+violet  <- "#6c71c4"
 magenta <- "#d33682"
-red <- "#d30102"
-orange <- "#cb4b16"
-yellow <- "#b58900"
+red     <- "#d30102"
+orange  <- "#cb4b16"
+yellow  <- "#b58900"
 
 
 #' Replace console color codes in text with styled spans
@@ -53,10 +53,10 @@ text_to_html <- function(lines) {
 #'
 #' @return an HTML formatted message
 msg_h1 <- function(msg) {
-  pre <- "──"
-  post <- "──────────────────"
+  pre   <- "──"
+  post  <- "──────────────────"
   style <- glue::glue("style=\"color:{blue}; font-weight:bold; font-size:1.65rem;\"")
-  msg <- text_to_html(msg)
+  msg   <- text_to_html(msg)
   glue::glue("<span {style}>{pre} {msg} {post}</span>")
 }
 
@@ -70,10 +70,10 @@ msg_h1 <- function(msg) {
 #'
 #' @return an HTML formatted message
 msg_h2 <- function(msg) {
-  pre <- "──"
-  post <- "──"
+  pre   <- "──"
+  post  <- "──"
   style <- glue::glue("style=\"color: {yellow}; font-weight:bold;\"")
-  msg <- text_to_html(msg)
+  msg   <- text_to_html(msg)
   glue::glue("<span {style}>{pre} {msg} {post}</span>")
 }
 
@@ -86,9 +86,9 @@ msg_h2 <- function(msg) {
 #'
 #' @return an HTML formatted message
 msg_alert_danger <- function(msg) {
-  pre <- "\u2718"
+  pre   <- "\u2718"
   style <- glue::glue("style=\"color: {red}\"")
-  msg <- text_to_html(msg)
+  msg   <- text_to_html(msg)
   glue::glue("<span {style}>{pre} {msg}</span>")
 }
 
@@ -101,9 +101,9 @@ msg_alert_danger <- function(msg) {
 #'
 #' @return an HTML formatted message
 msg_alert_success <- function(msg) {
-  pre <- "\u2714"
+  pre   <- "\u2714"
   style <- glue::glue("style=\"color: {green}\"")
-  msg <- text_to_html(msg)
+  msg   <- text_to_html(msg)
   glue::glue("<span {style}>{pre} {msg}</span>")
 }
 
@@ -116,9 +116,9 @@ msg_alert_success <- function(msg) {
 #'
 #' @return an HTML formatted message
 msg_alert_info <- function(msg) {
-  pre <- "\u24d8"
+  pre   <- "\u24d8"
   style <- glue::glue("style=\"color: {cyan}\"")
-  msg <- text_to_html(msg)
+  msg   <- text_to_html(msg)
   glue::glue("<span {style}>{pre} {msg}</span>")
 }
 
@@ -131,8 +131,8 @@ msg_alert_info <- function(msg) {
 #'
 #' @return an HTML formatted message
 msg_alert_warning <- function(msg) {
-  pre <- "\u203C"
+  pre   <- "\u203C"
   style <- glue::glue("style=\"color: {yellow}\"")
-  msg <- text_to_html(msg)
+  msg   <- text_to_html(msg)
   glue::glue("<span {style}>{pre} {msg}</span>")
 }
