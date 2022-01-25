@@ -190,12 +190,15 @@ check_exercise_shiny <- function(lines, test_lines) {
   # Check that code passes tests
   msg_lines <- msg_h2("Ensuring all tests pass...") |> append_to_msg_lines()
   test_check_result <- check_tests(lines)
-  collapsed_output <- paste(test_check_result$output, collapse = "\n\t")
-  msg_lines <- text_to_html(collapsed_output) |> append_to_msg_lines()
   if (!test_check_result$success) {
+    # Add the error message
     (msg_lines
       <- msg_alert_danger(test_check_result$msg)
       |> append_to_msg_lines())
+
+    # Add the message from `testthat`
+    collapsed_output <- paste(test_check_result$output, collapse = "\n\t")
+    msg_lines <- text_to_html(collapsed_output) |> append_to_msg_lines()
     return(list(success = FALSE, msg = msg_lines))
   }
   msg_lines <- msg_alert_success(test_check_result$msg) |> append_to_msg_lines()
